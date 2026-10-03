@@ -1,4 +1,1 @@
-<resources>
-<style name="Theme.Daftry" parent="Theme.Material3.DayNight.NoActionBar">
-<item name="android:fontFamily">sans</item><item name="android:windowLightStatusBar">true</item><item name="android:colorAccent">#5B4636</item><item name="android:navigationBarColor">#F7F1E7</item><item name="android:statusBarColor">#F7F1E7</item>
-</style></resources>
+<resources><style name="Theme.Daftry" parent="Theme.AppCompat.DayNight.NoActionBar"><item name="android:fontFamily">sans</item><item name="android:windowLightStatusBar">true</item><item name="android:colorAccent">#6B4F3A</item><item name="android:navigationBarColor">#F7F1E7</item><item name="android:statusBarColor">#F7F1E7</item></style></resources>
