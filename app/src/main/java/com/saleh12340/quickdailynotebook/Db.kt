@@ -1,0 +1,14 @@
+package com.saleh12340.quickdailynotebook
+import android.content.*; import android.database.sqlite.*
+data class Block(val id:Long=0,val noteId:Long,val type:String,val position:Int,var text:String="",var uri:String="",var name:String="")
+class Db(c:Context):SQLiteOpenHelper(c,"notes.db",null,1){
+ override fun onCreate(d:SQLiteDatabase){d.execSQL("CREATE TABLE notes(id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT NOT NULL,createdAt INTEGER,updatedAt INTEGER,date INTEGER)");d.execSQL("CREATE TABLE blocks(id INTEGER PRIMARY KEY AUTOINCREMENT,noteId INTEGER,type TEXT,position INTEGER,text TEXT,uri TEXT,name TEXT)") }
+ override fun onUpgrade(d:SQLiteDatabase,o:Int,n:Int){}
+ fun notes(q:String=""):List<Array<Any>>{val r=mutableListOf<Array<Any>>();val c=readableDatabase.rawQuery("SELECT id,title,updatedAt FROM notes WHERE title LIKE ? OR id IN(SELECT noteId FROM blocks WHERE text LIKE ?) ORDER BY updatedAt DESC",arrayOf("%$q%","%$q%"));c.use{while(it.moveToNext())r.add(arrayOf(it.getLong(0),it.getString(1),it.getLong(2)))};return r}
+ fun newNote():Long{val t=System.currentTimeMillis();return writableDatabase.insert("notes",null,ContentValues().apply{put("title","ملاحظة جديدة");put("createdAt",t);put("updatedAt",t);put("date",t)})}
+ fun title(id:Long)=readableDatabase.rawQuery("SELECT title FROM notes WHERE id=?",arrayOf(id.toString())).use{if(it.moveToFirst())it.getString(0) else ""}
+ fun saveTitle(id:Long,s:String){writableDatabase.update("notes",ContentValues().apply{put("title",s);put("updatedAt",System.currentTimeMillis())},"id=?",arrayOf(id.toString()))}
+ fun blocks(id:Long):List<Block>{val a=mutableListOf<Block>();readableDatabase.rawQuery("SELECT id,noteId,type,position,text,uri,name FROM blocks WHERE noteId=? ORDER BY position,id",arrayOf(id.toString())).use{while(it.moveToNext())a.add(Block(it.getLong(0),it.getLong(1),it.getString(2),it.getInt(3),it.getString(4)?:"",it.getString(5)?:"",it.getString(6)?:""))};return a}
+ fun replaceBlocks(id:Long,b:List<Block>){val d=writableDatabase;d.beginTransaction();try{d.delete("blocks","noteId=?",arrayOf(id.toString()));b.forEachIndexed{i,x->d.insert("blocks",null,ContentValues().apply{put("noteId",id);put("type",x.type);put("position",i);put("text",x.text);put("uri",x.uri);put("name",x.name)})};d.update("notes",ContentValues().apply{put("updatedAt",System.currentTimeMillis())},"id=?",arrayOf(id.toString()));d.setTransactionSuccessful()}finally{d.endTransaction()}}
+ fun delete(id:Long){writableDatabase.delete("blocks","noteId=?",arrayOf(id.toString()));writableDatabase.delete("notes","id=?",arrayOf(id.toString()))}
+}
