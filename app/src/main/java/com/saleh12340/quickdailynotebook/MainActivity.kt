@@ -6,7 +6,7 @@ class MainActivity:Activity(){
  fun build(){window.decorView.layoutDirection=View.LAYOUT_DIRECTION_RTL;val root=LinearLayout(this);root.orientation=LinearLayout.VERTICAL;root.setPadding(18,18,18,18);root.setBackgroundColor(Color.rgb(247,241,231))
  val head=LinearLayout(this);head.gravity=Gravity.CENTER_VERTICAL;val title=TextView(this).apply{text="دفتر يومي";textSize=28f;setTextColor(Color.rgb(48,42,37));setTypeface(null,1)}
  head.addView(title,LinearLayout.LayoutParams(0,60,1f));val add=Button(this).apply{text="+ ملاحظة جديدة";setOnClickListener{val id=db.newNote();startActivity(Intent(this@MainActivity,NoteActivity::class.java).putExtra("id",id))}};head.addView(add)
- root.addView(head);search=EditText(this).apply{hint="🔍 بحث في الملاحظات";textDirection=View.TEXT_DIRECTION_RTL;singleLine=true;setOnEditorActionListener{_,_,_->refresh();false}};root.addView(search)
+ root.addView(head);search=EditText(this).apply{hint="🔍 بحث في الملاحظات";textDirection=View.TEXT_DIRECTION_RTL;setSingleLine(true);setOnEditorActionListener{_,_,_->refresh();false}};root.addView(search)
  list=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL};val sv=ScrollView(this);sv.addView(list);root.addView(sv,LinearLayout.LayoutParams(-1,0,1f));setContentView(root);refresh()}
  override fun onResume(){super.onResume();if(::list.isInitialized)refresh()}
  fun refresh(){list.removeAllViews();db.notes(search.text.toString()).forEach{row->val id=row[0] as Long;val card=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(16,14,16,14);background=getDrawable(com.saleh12340.quickdailynotebook.R.drawable.paper_line)}
